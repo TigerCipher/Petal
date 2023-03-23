@@ -42,4 +42,13 @@ using f64 = double;
 namespace ptl
 {
 using get_character = std::function<i32()>;
-}
+
+template<class... T>
+struct overloaded : T...
+{
+    using T::operator()...;
+};
+
+//template<class... T>
+//overloaded(T...) -> overloaded<T...>;
+} // namespace ptl

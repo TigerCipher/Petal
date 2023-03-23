@@ -25,6 +25,15 @@
 
 namespace ptl::type
 {
+
+namespace
+{
+type_t void_type;
+type_t number_type;
+type_t string_type;
+} // anonymous namespace
+
+
 registry::registry()
 {
     m_types.emplace(simple_type::nothing);
@@ -33,9 +42,35 @@ registry::registry()
 }
 
 
- type_handle registry::get_handle(const type_t& t)
+type_handle registry::get_handle(const type_t& t)
 {
-    return &*m_types.insert(t).first;
+    return std::visit(overloaded{
+                          [](const simple_type st) {
+                              switch (st)
+                              {
+                              case simple_type::nothing: return void_handle();
+                              case simple_type::number: return number_handle();
+                              case simple_type::string: return string_handle();
+                              }
+                          },
+                          [this](const auto& tt) { return &*m_types.insert(tt).first; },
+                      },
+                      t);
+}
+
+type_handle registry::void_handle()
+{
+    return &void_type;
+}
+
+type_handle registry::number_handle()
+{
+    return &number_type;
+}
+
+type_handle registry::string_handle()
+{
+    return &string_type;
 }
 
 bool registry::types_less::operator()(const type_t& t1, const type_t& t2) const
@@ -75,3 +110,41 @@ bool registry::types_less::operator()(const type_t& t1, const type_t& t2) const
 }
 
 } // namespace ptl::type
+
+namespace std
+{
+using namespace ptl;
+using namespace type;
+
+std::string to_string(type_handle t)
+{
+    return std::visit(overloaded{
+                          [](const simple_type st) {
+                              switch (st)
+                              {
+                              case simple_type::nothing: return std::string{ "void" };
+                              case simple_type::number: return std::string{ "number" };
+                              case simple_type::string: return std::string{ "string" };
+                              }
+                          },
+                          [](const array_type& at) {
+                              std::string ret{ to_string(at.inner_type_id) };
+                              ret += "[]";
+                              return ret;
+                          },
+                          [](const function_type& ft) {
+                              std::string ret{ to_string(ft.return_type_id) + "(" };
+                              auto        separator{ "" };
+                              for (const auto& [type_id, by_ref] : ft.parameter_type_id)
+                              {
+                                  ret += separator + to_string(type_id) + (by_ref ? "&" : "");
+                                  separator = ",";
+                              }
+                              ret += ")";
+                              return ret;
+                          },
+                      },
+                      *t);
+}
+
+} // namespace std

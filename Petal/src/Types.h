@@ -23,6 +23,7 @@
 
 #pragma once
 #include <set>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -40,12 +41,9 @@ enum struct simple_type
     string,
 };
 
-struct array_type
-{
-    i32 inner_type_id{};
-};
 
 struct function_type;
+struct array_type;
 using type_t      = std::variant<simple_type, array_type, function_type>;
 using type_handle = const type_t*;
 
@@ -57,8 +55,13 @@ struct function_type
         bool        by_ref{};
     };
 
-    i32                    return_type_id{};
+    type_handle            return_type_id{};
     std::vector<parameter> parameter_type_id{};
+};
+
+struct array_type
+{
+    type_handle inner_type_id{};
 };
 
 
@@ -68,6 +71,10 @@ public:
     registry();
 
     [[nodiscard]] type_handle get_handle(const type_t& t);
+
+    static type_handle void_handle();
+    static type_handle number_handle();
+    static type_handle string_handle();
 
 private:
     struct types_less
@@ -79,3 +86,8 @@ private:
 };
 
 } // namespace ptl::type
+
+namespace std
+{
+std::string to_string(ptl::type::type_handle t);
+}
