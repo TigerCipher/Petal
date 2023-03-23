@@ -26,20 +26,17 @@
 #include "Common.h"
 
 #include <exception>
-#include <functional>
 #include <string>
 #include <ostream>
 
 namespace ptl::error
 {
 
-using get_character = std::function<i32()>;
-
 class error : public std::exception
 {
 public:
-    error(const std::string& msg, u32 line_number, u32 char_index) :
-        m_message{ msg }, m_line_number{ line_number }, m_char_index{ char_index }
+    error(std::string msg, u32 line_number, u32 char_index) :
+        m_message{ std::move(msg) }, m_line_number{ line_number }, m_char_index{ char_index }
     {}
 
     [[nodiscard]] const char* what() const override { return m_message.c_str(); }

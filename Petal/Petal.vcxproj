@@ -86,11 +86,15 @@
   <ItemGroup>
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Debug\Errors.h" />
-    <ClInclude Include="src\Util\lookup.h" />
+    <ClInclude Include="src\PushBackStream.h" />
+    <ClInclude Include="src\Tokens.h" />
+    <ClInclude Include="src\Util\Lookup.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Debug\Errors.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\PushBackStream.cpp" />
+    <ClCompile Include="src\Tokens.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

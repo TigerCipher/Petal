@@ -15,31 +15,34 @@
 //     See the License for the specific language governing permissions and
 //     limitations under the License.
 //
-//  File Name: Common.h
-//  Date File Created: 03/21/2023
+//  File Name: PushBackStream.h
+//  Date File Created: 03/22/2023
 //  Author: Matt
 //
 //  ------------------------------------------------------------------------------
 
 #pragma once
+#include "Common.h"
 
-#include <cstdint>
-#include <functional>
-
-using u8  = uint8_t;
-using u16 = uint16_t;
-using u32 = uint32_t;
-using u64 = uint64_t;
-
-using i8  = int8_t;
-using i16 = int16_t;
-using i32 = int32_t;
-using i64 = int64_t;
-
-using f32 = float;
-using f64 = double;
+#include <stack>
 
 namespace ptl
 {
-using get_character = std::function<i32()>;
-}
+class push_back_stream
+{
+public:
+    push_back_stream(const get_character& input) : m_input{ input } {}
+
+    i32 operator()();
+
+    void push_back(i32 c);
+
+    u32 line_number() const { return m_line_number; }
+    u32 char_index() const { return m_char_index; }
+private:
+    const get_character& m_input{};
+    std::stack<i32>      m_stack{};
+    u32                  m_line_number{};
+    u32                  m_char_index{};
+};
+} // namespace ptl

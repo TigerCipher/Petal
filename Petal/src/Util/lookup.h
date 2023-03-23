@@ -38,13 +38,16 @@ public:
     using iterator       = typename container_t::const_iterator;
     using const_iterator = iterator;
 
-    lookup(std::initializer_list<value_t> init) : m_container{ init } { std::sort(m_container.begin(), m_container.end()); }
+    constexpr lookup(std::initializer_list<value_t> init) : m_container{ init } { std::sort(m_container.begin(), m_container.end()); }
 
-    lookup(container_t container) : m_container{ std::move(container) } { std::sort(m_container.begin(), m_container.end()); }
+    constexpr lookup(container_t container) : m_container{ std::move(container) }
+    {
+        std::sort(m_container.begin(), m_container.end());
+    }
 
-    const_iterator begin() const { return m_container.begin(); }
+    [[nodiscard]] constexpr const_iterator begin() const { return m_container.begin(); }
 
-    const_iterator end() const { return m_container.end(); }
+    [[nodiscard]] constexpr const_iterator end() const { return m_container.end(); }
 
     template<typename K>
     const_iterator find(const K& key) const
@@ -54,7 +57,7 @@ public:
         return it != end() && it->first == key ? it : end();
     }
 
-    [[nodiscard]] size_t size() const { return m_container.size(); }
+    [[nodiscard]] constexpr size_t size() const { return m_container.size(); }
 
 private:
     container_t m_container{};

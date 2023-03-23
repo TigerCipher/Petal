@@ -30,7 +30,7 @@ error parsing(const char* msg, u32 line_number, u32 char_index)
 {
     std::string err_msg{ "Parsing Error: " };
     err_msg += msg;
-    return { err_msg, line_number, char_index };
+    return { std::move(err_msg), line_number, char_index };
 }
 
 error unexpected(const std::string_view& unexpected, u32 line_number, u32 char_index)
