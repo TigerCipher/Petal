@@ -86,6 +86,7 @@
   <ItemGroup>
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Debug\Errors.h" />
+    <ClInclude Include="src\ExpressionTree.h" />
     <ClInclude Include="src\PushBackStream.h" />
     <ClInclude Include="src\Tokens.h" />
     <ClInclude Include="src\Types.h" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Debug\Errors.cpp" />
+    <ClCompile Include="src\ExpressionTree.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\PushBackStream.cpp" />
     <ClCompile Include="src\Tokens.cpp" />
