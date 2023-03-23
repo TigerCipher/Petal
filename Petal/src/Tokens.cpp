@@ -128,22 +128,6 @@ enum struct character_type
     punct,
 };
 
-} // anonymous namespace
-
-std::ostream& operator<<(std::ostream& os, reserved_token tk)
-{
-    os << token_string_map.find(tk)->second;
-    return os;
-}
-
-std::optional<reserved_token> get_keyword(std::string_view word)
-{
-    const auto it{ keyword_token_map.find(word) };
-    return it == keyword_token_map.end() ? std::nullopt : std::make_optional(it->second);
-}
-
-namespace
-{
 class comparator
 {
 public:
@@ -182,55 +166,6 @@ character_type get_character_type(i32 c)
     return character_type::punct;
 }
 
-} // anonymous namespace
-
-bool token::is_reserved_token() const
-{
-    return std::holds_alternative<enum reserved_token>(m_value);
-}
-
-bool token::is_identifier() const
-{
-    return std::holds_alternative<struct identifier>(m_value);
-}
-
-bool token::is_number() const
-{
-    return std::holds_alternative<f64>(m_value);
-}
-
-bool token::is_string() const
-{
-    return std::holds_alternative<std::string>(m_value);
-}
-
-bool token::is_eof() const
-{
-    return std::holds_alternative<eof>(m_value);
-}
-
-reserved_token token::reserved_token() const
-{
-    return std::get<enum reserved_token>(m_value);
-}
-
-std::string_view token::identifier() const
-{
-    return std::get<struct identifier>(m_value).name;
-}
-
-f64 token::number() const
-{
-    return std::get<f64>(m_value);
-}
-
-std::string_view token::string() const
-{
-    return std::get<std::string>(m_value);
-}
-
-namespace
-{
 token fetch_word(push_back_stream& stream)
 {
     const u32 line_number{ stream.line_number() };
@@ -369,6 +304,18 @@ void skip_block_comment(push_back_stream& stream)
 
 } // anonymous namespace
 
+std::ostream& operator<<(std::ostream& os, reserved_token tk)
+{
+    os << token_string_map.find(tk)->second;
+    return os;
+}
+
+std::optional<reserved_token> get_keyword(std::string_view word)
+{
+    const auto it{ keyword_token_map.find(word) };
+    return it == keyword_token_map.end() ? std::nullopt : std::make_optional(it->second);
+}
+
 
 std::optional<reserved_token> get_operator(push_back_stream& stream)
 {
@@ -430,6 +377,51 @@ token tokenize(push_back_stream& stream)
             break;
         }
     }
+}
+
+bool token::is_reserved_token() const
+{
+    return std::holds_alternative<enum reserved_token>(m_value);
+}
+
+bool token::is_identifier() const
+{
+    return std::holds_alternative<struct identifier>(m_value);
+}
+
+bool token::is_number() const
+{
+    return std::holds_alternative<f64>(m_value);
+}
+
+bool token::is_string() const
+{
+    return std::holds_alternative<std::string>(m_value);
+}
+
+bool token::is_eof() const
+{
+    return std::holds_alternative<eof>(m_value);
+}
+
+reserved_token token::reserved_token() const
+{
+    return std::get<enum reserved_token>(m_value);
+}
+
+std::string_view token::identifier() const
+{
+    return std::get<struct identifier>(m_value).name;
+}
+
+f64 token::number() const
+{
+    return std::get<f64>(m_value);
+}
+
+std::string_view token::string() const
+{
+    return std::get<std::string>(m_value);
 }
 
 } // namespace ptl
