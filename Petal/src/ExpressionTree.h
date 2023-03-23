@@ -101,7 +101,7 @@ struct node
     [[nodiscard]] bool is_string() const;
 
     [[nodiscard]] node_operation get_node_operation() const;
-    [[nodiscard]] std::string_view get_identifier() const;
+    [[nodiscard]] std::string_view get_identifier() const;=
     [[nodiscard]] f64 get_number() const;
     [[nodiscard]] std::string_view get_string() const;
 
