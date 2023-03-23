@@ -27,24 +27,15 @@ namespace ptl::type
 {
 registry::registry()
 {
-    register_type(simple_type::nothing);
-    register_type(simple_type::number);
-    register_type(simple_type::string);
+    m_types.emplace(simple_type::nothing);
+    m_types.emplace(simple_type::number);
+    m_types.emplace(simple_type::string);
 }
 
-i32 registry::register_type(const type_t& t)
+
+ type_handle registry::get_handle(const type_t& t)
 {
-    const auto [fst, snd]{ m_types_map.emplace(t, m_types_map.size()) };
-
-    if (snd)
-        m_types.push_back(t);
-
-    return fst->second;
-}
-
-const type_t& registry::get_type(i32 type_id) const
-{
-    return m_types[type_id];
+    return &*m_types.insert(t).first;
 }
 
 bool registry::types_less::operator()(const type_t& t1, const type_t& t2) const

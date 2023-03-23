@@ -22,8 +22,7 @@
 //  ------------------------------------------------------------------------------
 
 #pragma once
-#include <deque>
-#include <map>
+#include <set>
 #include <variant>
 #include <vector>
 
@@ -32,6 +31,7 @@
 
 namespace ptl::type
 {
+
 
 enum struct simple_type
 {
@@ -45,28 +45,29 @@ struct array_type
     i32 inner_type_id{};
 };
 
+struct function_type;
+using type_t      = std::variant<simple_type, array_type, function_type>;
+using type_handle = const type_t*;
+
 struct function_type
 {
     struct parameter
     {
-        i32  type_id{};
-        bool by_ref{};
+        type_handle type_id{};
+        bool        by_ref{};
     };
 
     i32                    return_type_id{};
     std::vector<parameter> parameter_type_id{};
 };
 
-using type_t = std::variant<simple_type, array_type, function_type>;
 
 class registry
 {
 public:
     registry();
 
-    i32 register_type(const type_t& t);
-
-    [[nodiscard]] const type_t& get_type(i32 type_id) const;
+    [[nodiscard]] type_handle get_handle(const type_t& t);
 
 private:
     struct types_less
@@ -74,8 +75,7 @@ private:
         bool operator()(const type_t& t1, const type_t& t2) const;
     };
 
-    std::map<type_t, i32, types_less> m_types_map{};
-    std::deque<type_t>                m_types{};
+    std::set<type_t, types_less> m_types{};
 };
 
 } // namespace ptl::type
