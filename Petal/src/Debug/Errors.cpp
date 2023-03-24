@@ -23,6 +23,8 @@
 
 #include "Errors.h"
 
+#include <format>
+
 namespace ptl::error
 {
 
@@ -39,6 +41,26 @@ error unexpected(const std::string_view& unexpected, u32 line_number, u32 char_i
     err_msg += unexpected;
     err_msg += "'";
     return parsing(err_msg.c_str(), line_number, char_index);
+}
+
+error semantic(const std::string_view& msg, u32 line_number, u32 char_index)
+{
+    std::string err_msg { std::format("Semantic Error: {}", msg) };
+    return {std::move(err_msg), line_number, char_index};
+}
+
+error incorrect_type(const std::string_view& src, std::string_view dest, bool lvalue, u32 line_number, u32 char_index)
+{
+    std::string msg;
+    if(lvalue)
+    {
+        msg = std::format("'{}' is not a lvalue", src);
+    }else
+    {
+        msg = std::format("Cannot convert '{}' to '{}'", src, dest);
+    }
+
+    return semantic(std::move(msg), line_number, char_index);
 }
 
 void format(const error& err, get_character src, std::ostream& output)

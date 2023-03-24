@@ -53,6 +53,8 @@ private:
 
 error parsing(const char* msg, u32 line_number, u32 char_index);
 error unexpected(const std::string_view& unexpected, u32 line_number, u32 char_index);
+error semantic(const std::string_view& msg, u32 line_number, u32 char_index);
+error incorrect_type(const std::string_view& src, std::string_view dest, bool lvalue, u32 line_number, u32 char_index);
 
 void format(const error& err, get_character src, std::ostream& output);
 
