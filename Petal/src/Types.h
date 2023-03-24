@@ -30,7 +30,7 @@
 #include "Common.h"
 
 
-namespace ptl::type
+namespace ptl
 {
 
 
@@ -65,10 +65,10 @@ struct array_type
 };
 
 
-class registry
+class type_registry
 {
 public:
-    registry();
+    type_registry();
 
     [[nodiscard]] type_handle get_handle(const type_t& t);
 
@@ -89,5 +89,5 @@ private:
 
 namespace std
 {
-std::string to_string(ptl::type::type_handle t);
+std::string to_string(ptl::type_handle t);
 }

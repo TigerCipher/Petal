@@ -31,25 +31,13 @@
 
 namespace ptl
 {
-using namespace type;
 
-class identifier_info
+struct identifier_info
 {
-public:
-    identifier_info(type_handle type_id, u32 index, bool is_global, bool is_constant) :
-        m_type_id{ type_id }, m_index{ index }, m_is_global{ is_global }, m_is_constant{ is_constant }
-    {}
-
-    [[nodiscard]] constexpr type_handle type_id() const { return m_type_id; }
-    [[nodiscard]] constexpr u32         index() const { return m_index; }
-    [[nodiscard]] constexpr bool        is_global() const { return m_is_global; }
-    [[nodiscard]] constexpr bool        is_constant() const { return m_is_constant; }
-
-private:
-    type_handle m_type_id{};
-    u32         m_index{};
-    bool        m_is_global{};
-    bool        m_is_constant{};
+    type_handle type_id{};
+    u32         index{};
+    bool        is_global{};
+    bool        is_constant{};
 };
 
 class identifier_lookup
@@ -58,16 +46,20 @@ public:
     virtual ~identifier_lookup() = default;
     [[nodiscard]] virtual const identifier_info* find(const std::string& name) const;
 
-    virtual void create_identifier(std::string name, type_handle type_id, bool is_constant) = 0;
+    virtual const identifier_info* create_identifier(std::string name, type_handle type_id, bool is_constant) = 0;
+
+protected:
+    const identifier_info*      insert(std::string name, type_handle type_id, u32 index, bool is_global, bool is_constant);
+    [[nodiscard]] constexpr u32 size() const { return (u32) m_identifiers.size(); }
 
 private:
     std::unordered_map<std::string, identifier_info> m_identifiers{};
 };
 
-class global_identifier_lookup : public identifier_lookup
+class global_identifier_lookup final : public identifier_lookup
 {
 public:
-    void create_identifier(std::string name, type_handle type_id, bool is_constant) override;
+    const identifier_info* create_identifier(std::string name, type_handle type_id, bool is_constant) override;
 };
 
 class local_identifier_lookup : public identifier_lookup
@@ -79,13 +71,45 @@ public:
 
     [[nodiscard]] const identifier_info* find(const std::string& name) const override;
 
-    void create_identifier(std::string name, type_handle type_id, bool is_constant) override;
+    const identifier_info* create_identifier(std::string name, type_handle type_id, bool is_constant) override;
 
     [[nodiscard]] scope<local_identifier_lookup> detach_parent() { return std::move(m_parent); }
 
 private:
     scope<local_identifier_lookup> m_parent{};
     i32                            m_next_identifier_index{};
+};
+
+class function_identifier_lookup final : public local_identifier_lookup
+{
+public:
+    function_identifier_lookup() : local_identifier_lookup{ nullptr }, m_next_param_index{ -1 } {}
+    const identifier_info* create_param(std::string name, type_handle type_id);
+
+private:
+    i32 m_next_param_index{};
+};
+
+class compiler_context
+{
+public:
+    compiler_context() = default;
+
+    type_handle get_handle(const type_t& t);
+
+    [[nodiscard]] const identifier_info* find(const std::string& name) const;
+    [[nodiscard]] const identifier_info* create_identifier(std::string name, type_handle type_id, bool is_constant);
+    [[nodiscard]] const identifier_info* create_param(std::string name, type_handle type_id) const;
+
+    void enter_scope();
+    void enter_function();
+    bool leave_scope();
+
+private:
+    function_identifier_lookup*    m_params{ nullptr };
+    global_identifier_lookup       m_globals{};
+    scope<local_identifier_lookup> m_locals{};
+    type_registry                  m_types{};
 };
 
 } // namespace ptl

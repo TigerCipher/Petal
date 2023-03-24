@@ -94,6 +94,7 @@
     <ClInclude Include="src\Util\Lookup.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CompilerContext.cpp" />
     <ClCompile Include="src\Debug\Errors.cpp" />
     <ClCompile Include="src\ExpressionTree.cpp" />
     <ClCompile Include="src\Main.cpp" />

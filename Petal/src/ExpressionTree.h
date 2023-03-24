@@ -25,15 +25,19 @@
 
 #include "Common.h"
 #include "Tokens.h"
+#include "Types.h"
 
 #include <variant>
 #include <vector>
+
+#include "CompilerContext.h"
 
 namespace ptl
 {
 
 enum struct node_operation
 {
+    param,
     preinc,
     predec,
     postinc,
@@ -52,8 +56,10 @@ enum struct node_operation
     band,
     bor,
     bxor,
-    sl,
-    sr,
+    bsl,
+    bsr,
+    land,
+    lor,
     concat,
     assign,
     add_assign,
@@ -75,8 +81,6 @@ enum struct node_operation
     le,
     ge,
     comma,
-    land,
-    lor,
     index,
 
     ternary,
@@ -90,29 +94,34 @@ using node_ptr = scope<node>;
 struct node
 {
     using node_v = std::variant<node_operation, std::string, f64, identifier>;
-    constexpr node(node_v value, std::vector<node_ptr> children, u32 line_number, u32 char_index) :
-        m_value{ std::move(value) }, m_children{ std::move(children) }, m_line_number{ line_number }, m_char_index{ char_index }
-    {}
+    node(compiler_context& context, node_v value, std::vector<node_ptr> children, u32 line_number, u32 char_index);
 
     [[nodiscard]] bool is_node_operation() const;
     [[nodiscard]] bool is_identifier() const;
     [[nodiscard]] bool is_number() const;
     [[nodiscard]] bool is_string() const;
 
-    [[nodiscard]] node_operation get_node_operation() const;
+    [[nodiscard]] node_operation   get_node_operation() const;
     [[nodiscard]] std::string_view get_identifier() const;
-    [[nodiscard]] f64 get_number() const;
+    [[nodiscard]] f64              get_number() const;
     [[nodiscard]] std::string_view get_string() const;
 
+    [[nodiscard]] constexpr const node_v&                value() const { return m_value; }
     [[nodiscard]] constexpr const std::vector<node_ptr>& children() const { return m_children; }
-    [[nodiscard]] constexpr u32 line_number() const { return m_line_number; }
-    [[nodiscard]] constexpr u32 char_index() const { return m_char_index; }
+    [[nodiscard]] constexpr u32                          line_number() const { return m_line_number; }
+    [[nodiscard]] constexpr u32                          char_index() const { return m_char_index; }
+    [[nodiscard]] constexpr type_handle                  type_id() const { return m_type_id; }
+    [[nodiscard]] constexpr bool                         lvalue() const { return m_lvalue; }
+
+    void check_conversion(type_handle type_id, bool lvalue) const;
 
 private:
     node_v                m_value{};
     std::vector<node_ptr> m_children{};
     u32                   m_line_number{};
     u32                   m_char_index{};
+    type_handle           m_type_id{};
+    bool                  m_lvalue{};
 };
 
 } // namespace ptl

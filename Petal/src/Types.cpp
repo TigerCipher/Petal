@@ -23,7 +23,7 @@
 
 #include "Types.h"
 
-namespace ptl::type
+namespace ptl
 {
 
 namespace
@@ -34,7 +34,7 @@ type_t string_type;
 } // anonymous namespace
 
 
-registry::registry()
+type_registry::type_registry()
 {
     m_types.emplace(simple_type::nothing);
     m_types.emplace(simple_type::number);
@@ -42,7 +42,7 @@ registry::registry()
 }
 
 
-type_handle registry::get_handle(const type_t& t)
+type_handle type_registry::get_handle(const type_t& t)
 {
     return std::visit(overloaded{
                           [](const simple_type st) {
@@ -58,22 +58,22 @@ type_handle registry::get_handle(const type_t& t)
                       t);
 }
 
-type_handle registry::void_handle()
+type_handle type_registry::void_handle()
 {
     return &void_type;
 }
 
-type_handle registry::number_handle()
+type_handle type_registry::number_handle()
 {
     return &number_type;
 }
 
-type_handle registry::string_handle()
+type_handle type_registry::string_handle()
 {
     return &string_type;
 }
 
-bool registry::types_less::operator()(const type_t& t1, const type_t& t2) const
+bool type_registry::types_less::operator()(const type_t& t1, const type_t& t2) const
 {
     const size_t idx1{ t1.index() };
 
@@ -114,7 +114,6 @@ bool registry::types_less::operator()(const type_t& t1, const type_t& t2) const
 namespace std
 {
 using namespace ptl;
-using namespace type;
 
 std::string to_string(type_handle t)
 {
