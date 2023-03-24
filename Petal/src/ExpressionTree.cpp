@@ -50,6 +50,11 @@ node_operation node::get_node_operation() const
     return std::get<node_operation>(m_value);
 }
 
+std::string_view node::get_identifier() const
+{
+    return std::get<identifier>(m_value).name;
+}
+
 f64 node::get_number() const
 {
     return std::get<f64>(m_value);

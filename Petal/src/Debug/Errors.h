@@ -32,17 +32,17 @@
 namespace ptl::error
 {
 
-class error : public std::exception
+class error final : public std::exception
 {
 public:
-    error(std::string msg, u32 line_number, u32 char_index) :
+    error(std::string msg, u32 line_number, u32 char_index) noexcept :
         m_message{ std::move(msg) }, m_line_number{ line_number }, m_char_index{ char_index }
     {}
 
-    [[nodiscard]] const char* what() const override { return m_message.c_str(); }
+    [[nodiscard]] const char* what() const noexcept override { return m_message.c_str(); }
 
-    [[nodiscard]] u32 line_number() const { return m_line_number; }
-    [[nodiscard]] u32 char_index() const { return m_char_index; }
+    [[nodiscard]] u32 line_number() const noexcept { return m_line_number; }
+    [[nodiscard]] u32 char_index() const noexcept { return m_char_index; }
 
 private:
     std::string m_message{};

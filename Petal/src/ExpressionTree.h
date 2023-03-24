@@ -25,7 +25,6 @@
 
 #include "Common.h"
 #include "Tokens.h"
-#include "Types.h"
 
 #include <variant>
 #include <vector>
@@ -86,7 +85,7 @@ enum struct node_operation
 };
 
 struct node;
-using node_ptr = std::unique_ptr<node>;
+using node_ptr = scope<node>;
 
 struct node
 {
@@ -101,7 +100,7 @@ struct node
     [[nodiscard]] bool is_string() const;
 
     [[nodiscard]] node_operation get_node_operation() const;
-    [[nodiscard]] std::string_view get_identifier() const;=
+    [[nodiscard]] std::string_view get_identifier() const;
     [[nodiscard]] f64 get_number() const;
     [[nodiscard]] std::string_view get_string() const;
 

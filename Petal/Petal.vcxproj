@@ -85,6 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h" />
+    <ClInclude Include="src\CompilerContext.h" />
     <ClInclude Include="src\Debug\Errors.h" />
     <ClInclude Include="src\ExpressionTree.h" />
     <ClInclude Include="src\PushBackStream.h" />
